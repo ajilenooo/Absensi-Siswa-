@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Absensi Siswa</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      padding: 20px;
+      color: #222;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .header {
+      background: rgba(255,255,255,0.95);
+      padding: 25px;
+      border-radius: 25px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: #1677ff;
+      margin-bottom: 10px;
+      font-size: 30px;
+    }
+
+    .header p {
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .clock {
+      display: inline-block;
+      background: #1677ff;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 25px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 14px;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"]:focus {
+      border-color: #1677ff;
+      box-shadow: 0 0 10px rgba(22,119,255,0.2);
+    }
+
+    .status-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .attendance-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .attendance-options input {
+      display: none;
+    }
+
+    .attendance-options label {
+      padding: 16px;
+      text-align: center;
+      border-radius: 15px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 0;
+    }
+
+    .hadir {
+      color: #0a9f4a;
+    }
+
+    .tidak {
+      color: #e53935;
+    }
+
+    #hadir:checked + label {
+      background: #18c76b;
+      color: white;
+      border-color: #18c76b;
+      transform: scale(1.03);
+    }
+
+    #tidak:checked + label {
+      background: #ef5350;
+      color: white;
+      border-color: #ef5350;
+      transform: scale(1.03);
+    }
+
+    .date-info {
+      background: #f1f7ff;
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .date-info strong {
+      color: #1677ff;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #1677ff, #005bea);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,91,234,0.3);
+    }
+
+    .list-title {
+      margin-bottom: 15px;
+      color: #1677ff;
+    }
+
+    .attendance-item {
+      background: #f8fbff;
+      border-left: 5px solid #18c76b;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .attendance-item.absent {
+      border-left-color: #ef5350;
+    }
+
+    .student-name {
+      font-weight: bold;
+      font-size: 17px;
+      margin-bottom: 5px;
+    }
+
+    .details {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .status.hadir-status {
+      background: #18c76b;
+    }
+
+    .status.tidak-status {
+      background: #ef5350;
+    }
+
+    .delete-btn {
+      background: #ff4d4d;
+      margin-top: 15px;
+      font-size: 14px;
+      padding: 12px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
+
+    .footer {
+      text-align: center;
+      color: white;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 12px;
+      }
+
+      .header h1 {
+        font-size: 25px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>📋 ABSENSI SISWA</h1>
+    <p>Silakan isi nama dan status kehadiran kamu.</p>
+
+    <div class="clock" id="clock">
+      00:00:00 WIB
+    </div>
+  </div>
+
+  <div class="card">
+
+    <label for="nama">👤 Nama Siswa</label>
+    <input
+      type="text"
+      id="nama"
+      placeholder="Masukkan nama lengkap..."
+      autocomplete="off"
+    >
+
+    <div class="status-title">
+      📌 Status Kehadiran
+    </div>
+
+    <div class="attendance-options">
+
+      <input type="radio" id="hadir" name="status" value="Hadir">
+      <label for="hadir" class="hadir">
+        ✅ Hadir
+      </label>
+
+      <input type="radio" id="tidak" name="status" value="Tidak Hadir">
+      <label for="tidak" class="tidak">
+        ❌ Tidak Hadir
+      </label>
+
+    </div>
+
+    <div class="date-info">
+      📅 Tanggal:
+      <strong id="tanggal"></strong>
+      <br>
+
+      🕐 Waktu:
+      <strong id="waktu"></strong>
+      <br>
+
+      🌏 Zona waktu:
+      <strong>WIB (UTC+7)</strong>
+    </div>
+
+    <button onclick="kirimAbsensi()">
+      📤 KIRIM ABSENSI
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h2 class="list-title">
+      📊 Daftar Absensi Hari Ini
+    </h2>
+
+    <div id="daftarAbsensi"></div>
+
+
+
+  </div>
+
+  <div class="footer">
+    Sistem Absensi Siswa • Waktu Indonesia Barat
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://krodqhbmgffacpsvwvcc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TYxOTUKoK3D_Rztmx2IgYg_M_6D0Qsf";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+</script>
+<script>
+
+  // ==============================
+  // PUBLIC KEY
+  // ==============================
+  const PUBLIC_KEY = "fF8zNC5pQ0c54Gdxb";
+
+
+  // ==============================
+  // JAM WIB
+  // ==============================
+
+  function updateClock() {
+
+    const sekarang = new Date();
+
+    const jam = sekarang.toLocaleTimeString(
+      "id-ID",
+      {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      }
+    );
+
+    document.getElementById("clock").textContent =
+      jam + " WIB";
+
+    const tanggal = sekarang.toLocaleDateString(
+      "id-ID",
+      {
+        timeZone: "Asia/Jakarta",
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    );
+
+    document.getElementById("tanggal").textContent =
+      tanggal;
+
+    document.getElementById("waktu").textContent =
+      jam + " WIB";
+  }
+
+  updateClock();
+
+  setInterval(updateClock, 1000);
+
+
+  // ==============================
+  // DATA ABSENSI
+  // ==============================
+
+  async function getData() {
+    const { data, error } = await supabaseClient.from("absensi").select("*").order("created_at", { ascending: false });
+    if (error) { console.error(error); return []; }
+    return data || [];
+  }
+
+
+  // ==============================
+  // KIRIM ABSENSI
+  // ==============================
+
+  async function kirimAbsensi() {
+
+    const nama =
+      document.getElementById("nama").value.trim();
+
+    const status =
+      document.querySelector(
+        'input[name="status"]:checked'
+      );
+
+    if (nama === "") {
+
+      alert("⚠️ Silakan masukkan nama terlebih dahulu.");
+
+      return;
+
+    }
+
+    if (!status) {
+
+      alert("⚠️ Silakan pilih status kehadiran.");
+
+      return;
+
+    }
+
+    const sekarang = new Date();
+
+    const tanggal =
+      sekarang.toLocaleDateString(
+        "id-ID",
+        {
+          timeZone: "Asia/Jakarta",
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+    const waktu =
+      sekarang.toLocaleTimeString(
+        "id-ID",
+        {
+          timeZone: "Asia/Jakarta",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        }
+      );
+
+    const { error } = await supabaseClient.from("absensi").insert({
+      nama: nama,
+      status: status.value,
+      tanggal: tanggal,
+      waktu: waktu,
+      zona: "WIB (UTC+7)"
+    });
+
+    if (error) {
+      console.error(error);
+      alert("❌ Absensi gagal dikirim. Pastikan tabel Supabase sudah dibuat.");
+      return;
+    }
+
+    alert(
+      "✅ Absensi berhasil dikirim!\n\n" +
+      "Nama: " + nama +
+      "\nStatus: " + status.value +
+      "\nWaktu: " + waktu + " WIB"
+    );
+
+    document.getElementById("nama").value = "";
+
+    document
+      .querySelectorAll('input[name="status"]')
+      .forEach(input => input.checked = false);
+
+    tampilkanAbsensi();
+
+  }
+
+
+  // ==============================
+  // MENAMPILKAN ABSENSI
+  // ==============================
+
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
+  }
+
+  function tampilkanAbsensi() {
+
+    const daftar =
+      document.getElementById("daftarAbsensi");
+
+    const data = await getData();
+
+    if (data.length === 0) {
+
+      daftar.innerHTML =
+        '<div class="empty">' +
+        'Belum ada siswa yang mengisi absensi.' +
+        '</div>';
+
+      return;
+
+    }
+
+    daftar.innerHTML = "";
+
+    data.forEach((item) => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "attendance-item " +
+        (item.status === "Tidak Hadir"
+          ? "absent"
+          : "");
+
+      div.innerHTML = `
+
+        <div class="student-name">
+          👤 ${escapeHtml(item.nama)}
+        </div>
+
+        <div class="details">
+          📅 ${item.tanggal}<br>
+          🕐 ${item.waktu} WIB
+        </div>
+
+        <span class="status ${
+          item.status === "Hadir"
+            ? "hadir-status"
+            : "tidak-status"
+        }">
+
+          ${
+            item.status === "Hadir"
+              ? "✅ HADIR"
+              : "❌ TIDAK HADIR"
+          }
+
+        </span>
+
+      `;
+
+      daftar.appendChild(div);
+
+    });
+
+  }
+
+
+  // ==============================
+  // JALANKAN SAAT WEBSITE DIBUKA
+  // ==============================
+
+  tampilkanAbsensi();
+  setInterval(tampilkanAbsensi, 5000);
+
+</script>
+
+</body>
+</html>
